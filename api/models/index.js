@@ -1,6 +1,8 @@
 import { sequelize } from "../database/sequelize-client.js";
 import Pokemon from "./pokemon.js";
 import Type from "./type.js";
+import User from "./user.js";
+import Team from "./team.js";
 
 
 Pokemon.belongsToMany(Type,{
@@ -17,11 +19,30 @@ Type.belongsToMany(Pokemon,{
     otherKey: "pokemon_id"
 })
 
-export { Pokemon, Type, sequelize}
+User.hasMany(Team,{
+    foreignKey: "user_id",
+    as: "teams",
+    onDelete: "CASCADE"
+})
 
-/* try {
-    await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-    } catch (error) {
-    console.error('Unable to connect to the database:', error);
-} */
+Team.belongsTo(User,{
+    foreignKey: "user_id",
+    as: "user"
+})
+
+Team.belongsToMany(Pokemon,{
+    foreignKey: "team_id",
+    as: "pokemons",
+    through: "team_pokemon",
+    otherKey: "pokemon_id"
+})
+
+Pokemon.belongsToMany(Team,{
+    foreignKey: "pokemon_id",
+    as: "teams",
+    through: "team_pokemon",
+    otherKey: "team_id"
+})
+
+
+export { Pokemon, Type, User, Team, sequelize}
