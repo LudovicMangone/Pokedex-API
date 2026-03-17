@@ -1,21 +1,26 @@
 import { Router } from "express";
 import * as teamController from "../controllers/teamController.js";
-import { controllerHandler, validateSchema, validateId } from "../middlewares/common.middleware.js";
+import  { validateSchema, validateId } from "../middlewares/common.middleware.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 import { createTeamSchema, updateTeamSchema } from "../schemas/team.schema.js";
 
 const router = Router();
 
-// --- Routes pour l'entité Team ---
-router.get("/", controllerHandler(teamController.getAll));
-router.get("/:id",validateId(), controllerHandler(teamController.getOne));
-router.post("/", validateSchema(createTeamSchema), controllerHandler(teamController.create));
-router.patch("/:id",validateId(), validateSchema(updateTeamSchema), controllerHandler(teamController.update));
-router.delete("/:id",validateId(), controllerHandler(teamController.destroy));
+// --- Routes pour l'entité Team publiques ---
+router.get("/",teamController.getAll);
+router.get("/:id",validateId(),teamController.getOne);
+
+// --- Routes pour l'entité Team protégées ---
+router.use(verifyToken);
+
+router.post("/", validateSchema(createTeamSchema),teamController.create);
+router.patch("/:id",validateId(), validateSchema(updateTeamSchema),teamController.update);
+router.delete("/:id",validateId(),teamController.destroy);
 
 
 // --- Routes pour les relations  ---
 
-router.post("/:teamId/pokemons/:pokemonId",validateId("teamId"),validateId("pokemonId"), controllerHandler(teamController.addPokemonToTeam));
-router.delete("/:teamId/pokemons/:pokemonId",validateId("teamId"),validateId("pokemonId"), controllerHandler(teamController.removePokemonFromTeam));
+router.post("/:teamId/pokemons/:pokemonId",validateId("teamId"),validateId("pokemonId"),teamController.addPokemonToTeam);
+router.delete("/:teamId/pokemons/:pokemonId",validateId("teamId"),validateId("pokemonId"),teamController.removePokemonFromTeam);
 
 export { router as teamRouter};

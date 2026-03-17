@@ -1,17 +1,21 @@
 import Joi from "joi";
 import { joiValidator } from "../utils/common.utils.js";
 
-export function controllerHandler(controller) {
-    return async (req, res, next) => {
-        try {
-            await controller(req, res, next);
-        } catch (error) {
-            console.error(error);
-            next(error);
-        }
-    };
-}
 export function errorHandler(err, req, res, next) {
+    if (err.name === "SequelizeUniqueConstraintError") {
+        return res.status(409).json({ 
+            error: true, 
+            message: "Cette donnée existe déjà." 
+        });
+    }
+
+    if (err.name === "SequelizeValidationError") {
+        return res.status(400).json({
+            message: "Erreur de validation des données.",
+            details: err.errors.map(e => e.message)
+        });
+    }
+
   let response = {
     error: true,
     message: "The server has failed, please try again."

@@ -28,15 +28,17 @@ export async function getOne(req, res) {
 
 // POST /teams
 export async function create(req, res) {
-    const {name, user_id} = req.body;
-    const existingTeam = await Team.findOne({ where: { name, user_id } });
-    if (existingTeam) {
-        return res.status(400).json({ message: "L'équipe existe déjà" });
-    }
-    const team = await Team.create(req.body);
+    const { name, description } = req.body;
+    const user_id = req.user.userId;
+
+    const team = await Team.create({
+        name,
+        description,
+        user_id
+    });
+
     res.status(201).json(team);
 }
-
 // PATCH /teams/:id
 export async function update(req, res) {
     const team = await Team.findByPk(req.params.id);
