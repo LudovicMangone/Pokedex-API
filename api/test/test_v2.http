@@ -1,0 +1,151 @@
+### ============================================================================
+### 👑 POKEDEX API - THE DEFINITIVE STABILITY TEST SUITE
+### ============================================================================
+@baseUrl = http://localhost:3000
+
+# 🔑 À REMPLIR APRÈS LES LOGINS
+@tokenSacha = 
+@tokenOndine = 
+
+# 📌 PARAMÈTRES DE TEST
+@teamId = 2
+@pikachuId = 25
+
+### ----------------------------------------------------------------------------
+### 🟢 ÉTAPE 1 : CRÉATION DES COMPTES (SIGNUP)
+### ----------------------------------------------------------------------------
+
+### Inscription Sacha
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+    "firstName": "Sacha",
+    "lastName": "Ketchum",
+    "email": "sacha@bourg-palette.com",
+    "password": "Password123!"
+}
+
+### Inscription Ondine
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+    "firstName": "Ondine",
+    "lastName": "Azuria",
+    "email": "ondine@azuria.com",
+    "password": "Password123!"
+}
+
+
+### ----------------------------------------------------------------------------
+### 🔵 ÉTAPE 2 : CONNEXION (LOGIN)
+### ----------------------------------------------------------------------------
+
+### Login Sacha -> Copie le token dans @tokenSacha
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "sacha@bourg-palette.com",
+    "password": "Password123!"
+}
+
+### Login Ondine -> Copie le token dans @tokenOndine
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "ondine@azuria.com",
+    "password": "Password123!"
+}
+
+
+### ----------------------------------------------------------------------------
+### 🟡 ÉTAPE 3 : NAVIGATION & RECHERCHE (OPTION B)
+### ----------------------------------------------------------------------------
+
+### Liste globale (Vérifier que les Pokémons sont là après le reset)
+GET {{baseUrl}}/pokemons
+
+### Recherche par nom (Pika)
+GET {{baseUrl}}/pokemons?name=pika
+
+### Recherche par type (Feu)
+GET {{baseUrl}}/pokemons?type=feu
+
+### Recherche combinée (Nom + Type)
+GET {{baseUrl}}/pokemons?name=arre&type=plante
+
+### ❌ Test Robustesse : ID malformé (Doit renvoyer 400)
+GET {{baseUrl}}/pokemons/not-a-number
+
+
+### ----------------------------------------------------------------------------
+### 🔴 ÉTAPE 4 : SÉCURITÉ & TEAMS (OPTION A)
+### ----------------------------------------------------------------------------
+
+### Sacha crée son équipe
+POST {{baseUrl}}/teams
+Content-Type: application/json
+Authorization: Bearer {{tokenSacha}}
+
+{
+    "name": "Team Kanto",
+    "description": "Objectif Conseil des 4"
+}
+
+### ✅ SUCCÈS : Sacha modifie son équipe
+PATCH {{baseUrl}}/teams/{{teamId}}
+Content-Type: application/json
+Authorization: Bearer {{tokenSacha}}
+
+{
+    "name": "Team Sacha Champion"
+}
+
+### ❌ SÉCURITÉ : Ondine tente de modifier l'équipe de Sacha
+# Doit renvoyer 403 Forbidden
+PATCH {{baseUrl}}/teams/{{teamId}}
+Content-Type: application/json
+Authorization: Bearer {{tokenOndine}}
+
+{
+    "name": "Piratage d'Ondine"
+}
+
+
+### ----------------------------------------------------------------------------
+### 🟣 ÉTAPE 5 : SYSTÈME DE VOTES (OPTION C)
+### ----------------------------------------------------------------------------
+
+### ✅ Sacha vote pour Pikachu
+POST {{baseUrl}}/pokemons/{{pikachuId}}/vote
+Authorization: Bearer {{tokenSacha}}
+
+### ✅ Ondine vote aussi pour Pikachu
+POST {{baseUrl}}/pokemons/{{pikachuId}}/vote
+Authorization: Bearer {{tokenOndine}}
+
+### ❌ ERREUR : Sacha revote (Doublon interdit)
+# Doit renvoyer 400
+POST {{baseUrl}}/pokemons/{{pikachuId}}/vote
+Authorization: Bearer {{tokenSacha}}
+
+### ✅ Sacha retire son vote
+DELETE {{baseUrl}}/pokemons/{{pikachuId}}/vote
+Authorization: Bearer {{tokenSacha}}
+
+
+### ----------------------------------------------------------------------------
+### ⚪ ÉTAPE 6 : NETTOYAGE & CAS LIMITES
+### ----------------------------------------------------------------------------
+
+### ❌ Suppression sans être le propriétaire
+# Doit renvoyer 403
+DELETE {{baseUrl}}/teams/{{teamId}}
+Authorization: Bearer {{tokenOndine}}
+
+### ✅ Suppression finale par le propriétaire
+DELETE {{baseUrl}}/teams/{{teamId}}
+Authorization: Bearer {{tokenSacha}}

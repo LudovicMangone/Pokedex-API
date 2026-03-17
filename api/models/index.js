@@ -3,6 +3,7 @@ import Pokemon from "./pokemon.js";
 import Type from "./type.js";
 import User from "./user.js";
 import Team from "./team.js";
+import Vote from "./vote.js";
 
 
 Pokemon.belongsToMany(Type,{
@@ -44,5 +45,18 @@ Pokemon.belongsToMany(Team,{
     otherKey: "team_id"
 })
 
+User.belongsToMany(Pokemon, {
+    through: Vote,
+    foreignKey: "user_id",
+    otherKey: "pokemon_id",
+    as: "votedPokemons"
+})
 
-export { Pokemon, Type, User, Team, sequelize}
+Pokemon.belongsToMany(User, {
+    through: Vote,
+    foreignKey: "pokemon_id",
+    otherKey: "user_id",
+    as: "voters"
+});
+
+export { Pokemon, Type, User, Team, Vote, sequelize}
