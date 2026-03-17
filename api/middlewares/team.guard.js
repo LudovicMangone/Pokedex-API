@@ -9,8 +9,6 @@ export async function isTeamOwner(req, res, next) {
     if (!team) {
         return res.status(404).json({ message: "Équipe introuvable." });
     }
-    console.log("ID utilisateur du Token :", userId, typeof userId);
-console.log("ID propriétaire en DB :", team.user_id, typeof team.user_id);
 
     if (Number(team.user_id) !== Number(userId)) {
         return res.status(403).json({ message: "Accès interdit : vous n'êtes pas le propriétaire." });
