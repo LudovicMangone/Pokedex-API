@@ -1,3 +1,4 @@
+import Joi from "joi";
 import { joiValidator } from "../utils/common.utils.js";
 
 export function controllerHandler(controller) {
@@ -39,6 +40,27 @@ export function validateSchema(schema) {
                 details: validationResponse.details.map(d => d.message)
             });
         }
+        next();
+    };
+}
+
+export function validateId(paramName = "id") {
+    return (req, res, next) => {
+        const schema = Joi.object({
+            [paramName]: Joi.number().integer().positive().required()
+        });
+
+        const validationResponse = joiValidator(schema, {
+            [paramName]: req.params[paramName]
+        });
+
+        if (validationResponse !== true) {
+            return res.status(400).json({
+                message: `Le paramètre '${paramName}' est invalide dans l'URL.`,
+                details: validationResponse.details.map(d => d.message)
+            });
+        }
+
         next();
     };
 }
