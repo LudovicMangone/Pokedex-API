@@ -1,14 +1,35 @@
 import { Pokemon, Type } from "../models/index.js";
+import { Op } from "sequelize";
 
 // GET /pokemons
 export async function getAll(req, res) {
-    const pokemons = await Pokemon.findAll({
-        include: {
-            association: "types",
-            through: { attributes: [] }
-        },
-        order: [['id', 'ASC']]
-    });
+    const { name, type } = req.query;
+
+    const queryOptions = {
+        order: [['id', 'ASC']],
+        where: {},
+        include: [
+            {
+                association: "types",
+                through: { attributes: [] },
+                where: {}
+        }]
+    };
+
+    if (name) {
+        queryOptions.where.name = {
+            [Op.iLike]: `%${name}%`
+        };
+    }
+    if (type) {
+        queryOptions.include[0].where.name = {
+            [Op.iLike]: `%${type}%`
+        }
+    } else {
+        delete queryOptions.include[0].where;
+    }
+
+    const pokemons = await Pokemon.findAll(queryOptions);
     
     res.json(pokemons);
 }

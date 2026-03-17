@@ -1,3 +1,4 @@
 PG_URL=protocol://user:password@host:port/database
 PORT=numero du port
 NODE_ENV=development
+JWT_SECRET=MonSuperCodeSecretQuePersonneNeConnait123!
