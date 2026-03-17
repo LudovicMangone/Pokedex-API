@@ -13,7 +13,6 @@ export async function isTeamOwner(req, res, next) {
 console.log("ID propriétaire en DB :", team.user_id, typeof team.user_id);
 
     if (Number(team.user_id) !== Number(userId)) {
-        console.log(`Propriétaire attendu: ${team.user_id}, Utilisateur actuel: ${userId}`); // Petit log pour débugger au cas où
         return res.status(403).json({ message: "Accès interdit : vous n'êtes pas le propriétaire." });
     }
 
