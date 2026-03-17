@@ -16,7 +16,12 @@ export async function getAll(req, res) {
 
 // GET /teams/:id
 export async function getOne(req, res) {
-    const team = await Team.findByPk(req.params.id, { include: "pokemons" });
+    const team = await Team.findByPk(req.params.id, { 
+    include: {
+        association: "pokemons",
+        through: { attributes: [] }
+    } 
+});
     if (!team) return res.status(404).json({ message: "Team not found" });
     res.json(team);
 }
@@ -57,7 +62,7 @@ export async function addPokemonToTeam(req, res) {
     const pokemon = await Pokemon.findByPk(pokemonId);
     if (!team || !pokemon) return res.status(404).json({ message: "Team or Pokemon not found" });
     const exist = await team.hasPokemon(pokemon);
-    if (team.pokemons.length >= 6) {
+    if (team.pokemons?.length >= 6) {
         return res.status(400).json({ message: "L'équipe est déjà pleine" })
     }
     if (exist) {

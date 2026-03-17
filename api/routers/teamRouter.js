@@ -1,8 +1,7 @@
 import { Router } from "express";
 import * as teamController from "../controllers/teamController.js";
-import { controllerHandler } from "../middlewares/common.middleware.js";
+import { controllerHandler, validateSchema } from "../middlewares/common.middleware.js";
 import { createTeamSchema, updateTeamSchema } from "../schemas/team.schema.js";
-import { validateSchema } from "../middlewares/common.middleware.js";
 
 const router = Router();
 

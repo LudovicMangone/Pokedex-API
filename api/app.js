@@ -1,7 +1,9 @@
 import "dotenv/config"
 import express from "express";
 import cors from "cors";
-import {teamRouter} from "./routers/teamRouter.js"
+import { teamRouter } from "./routers/teamRouter.js"
+import { pokemonRouter } from "./routers/pokemonRouter.js";
+import { typeRouter } from "./routers/typeRouter.js";
 import { notFoundHandler, errorHandler } from "./middlewares/common.middleware.js";
 
 const app = express();
@@ -16,7 +18,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
     res.send("Bienvenue sur l'API Pokedex !")
 });
-
+app.use("/pokemons", pokemonRouter);
+app.use("/types", typeRouter);
 app.use("/teams", teamRouter);
 
 app.use(notFoundHandler);
