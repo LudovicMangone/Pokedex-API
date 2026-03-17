@@ -13,7 +13,7 @@ User.init(
             unique: true
         },
         password: {
-            type: DataTypes.STRING(),
+            type: DataTypes.STRING,
             allowNull: false
         },
         firstName: {

@@ -23,6 +23,11 @@ export async function getOne(req, res) {
 
 // POST /teams
 export async function create(req, res) {
+    const {name, user_id} = req.body;
+    const existingTeam = await Team.findOne({ where: { name, user_id } });
+    if (existingTeam) {
+        return res.status(400).json({ message: "L'équipe existe déjà" });
+    }
     const team = await Team.create(req.body);
     res.status(201).json(team);
 }

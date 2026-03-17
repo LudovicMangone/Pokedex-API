@@ -17,9 +17,9 @@ POST {{host}}/teams
 Content-Type: application/json
 
 {
-    "name": "Team Rocket",
+    "name": " fr az",
     "description": "Pour voler tous les Pokémons du monde",
-    "user_id": "1"
+    "user_id": 2
 }
 
 ###
@@ -30,7 +30,7 @@ PATCH {{host}}/teams/2
 Content-Type: application/json
 
 {
-    "name": "Team Rocket Elite",
+    "name": "Te",
     "description": "La version améliorée"
 }
 

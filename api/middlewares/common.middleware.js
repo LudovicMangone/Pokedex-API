@@ -1,3 +1,5 @@
+import { joiValidator } from "../utils/common.utils.js";
+
 export function controllerHandler(controller) {
     return async (req, res, next) => {
         try {
@@ -25,4 +27,18 @@ export function errorHandler(err, req, res, next) {
 export function notFoundHandler(req, res, next) {
   res.status(404).json({error: "Route Not Found"});
   next();
+}
+
+export function validateSchema(schema) {
+    return (req, res, next) => {
+        const validationResponse = joiValidator(schema, req.body);
+        
+        if (validationResponse !== true) {
+            return res.status(400).json({
+                message: "Validation failed",
+                details: validationResponse.details.map(d => d.message)
+            });
+        }
+        next();
+    };
 }
