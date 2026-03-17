@@ -41,8 +41,7 @@ export async function create(req, res) {
 }
 // PATCH /teams/:id
 export async function update(req, res) {
-    const team = await Team.findByPk(req.params.id);
-    if (!team) return res.status(404).json({ message: "Team not found" });
+    const team = req.team; 
     
     await team.update(req.body);
     res.json(team);
@@ -50,40 +49,46 @@ export async function update(req, res) {
 
 // DELETE /teams/:id
 export async function destroy(req, res) {
-    const team = await Team.findByPk(req.params.id);
-    if (!team) return res.status(404).json({ message: "Team not found" });
-    
+    const team = req.team;
+
     await team.destroy();
     res.status(204).end();
 }
 
 // POST /teams/:id/pokemons/:pokemonId
 export async function addPokemonToTeam(req, res) {
-    const { teamId, pokemonId } = req.params;
-    const team = await Team.findByPk(teamId, { include: "pokemons" });
+    const { pokemonId } = req.params;
+    const team = req.team;
+
     const pokemon = await Pokemon.findByPk(pokemonId);
-    if (!team || !pokemon) return res.status(404).json({ message: "Team or Pokemon not found" });
-    const exist = await team.hasPokemon(pokemon);
-    if (team.pokemons?.length >= 6) {
-        return res.status(400).json({ message: "L'équipe est déjà pleine" })
+    if (!pokemon) return res.status(404).json({ message: "Pokemon not found" });
+
+    const pokemonCount = await team.countPokemons();
+    if (pokemonCount >= 6) {
+        return res.status(400).json({ message: "L'équipe est déjà pleine" });
     }
+
+    const exist = await team.hasPokemon(pokemon);
     if (exist) {
-        return res.status(400).json({ message: `Le pokemon ${pokemon.name} est déjà dans l'équipe ${team.name}` })
+        return res.status(400).json({ message: `Le pokemon ${pokemon.name} est déjà dans l'équipe ${team.name}` });
     }
 
     await team.addPokemon(pokemon);
     res.status(201).json({ message: `Ajout du pokemon ${pokemon.name} à l'équipe ${team.name}` });
 }
-
 // DELETE /teams/:id/pokemons/:pokemonId
 export async function removePokemonFromTeam(req, res) {
-    const { teamId, pokemonId } = req.params;
-    const team = await Team.findByPk(teamId);
+    const { pokemonId } = req.params;
+    const team = req.team; 
+
     const pokemon = await Pokemon.findByPk(pokemonId);
-    if (!team || !pokemon) return res.status(404).json({ message: "Team or Pokemon not found" });
-        const exist = await team.hasPokemon(pokemon);
+    if (!pokemon) return res.status(404).json({ message: "Pokemon not found" });
+
+    const exist = await team.hasPokemon(pokemon);
     if (!exist) {
-    return res.status(400).json({ message: "Ce Pokémon n'est pas dans cette équipe" });    }
+        return res.status(400).json({ message: "Ce Pokémon n'est pas dans cette équipe" });
+    }
+
     await team.removePokemon(pokemon);
     res.status(200).json({ message: `Suppression du pokemon ${pokemon.name} de l'équipe ${team.name}` });
 }
