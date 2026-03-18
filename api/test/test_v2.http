@@ -81,7 +81,7 @@ GET {{baseUrl}}/pokemons?name=arre&type=plante
 GET {{baseUrl}}/pokemons/not-a-number
 
 ### Compare 2 pokemons
-GET {{baseUrl}}/pokemons/compare/2/1
+GET {{baseUrl}}/pokemons/compare/25/99999
 
 
 

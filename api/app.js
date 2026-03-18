@@ -1,3 +1,5 @@
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './docs/swagger.js';
 import "dotenv/config"
 import express from "express";
 import cors from "cors";
@@ -23,6 +25,8 @@ app.use("/auth", authRouter);
 app.use("/pokemons", pokemonRouter);
 app.use("/types", typeRouter);
 app.use("/teams", teamRouter);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(notFoundHandler);
 app.use(errorHandler);
