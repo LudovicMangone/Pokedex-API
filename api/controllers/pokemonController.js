@@ -7,9 +7,9 @@ const VOTE_COUNT_ATTRIBUTE = [
 ];
 
 const COMMON_INCLUDE = {
-        association: "types",
-        through: { attributes: [] }
-    };
+    association: "types",
+    through: { attributes: [] }
+};
 
 // GET /pokemons
 export async function getAll(req, res) {
@@ -21,7 +21,7 @@ export async function getAll(req, res) {
         attributes: {
             include: [VOTE_COUNT_ATTRIBUTE]
         },
-        include: [{...COMMON_INCLUDE}] 
+        include: [{ ...COMMON_INCLUDE }]
     };
 
     if (name) {
@@ -44,7 +44,7 @@ export async function getAll(req, res) {
 
 // GET /pokemons/podium
 
-export async function getPodium(req,res) {
+export async function getPodium(req, res) {
     const pokemons = await Pokemon.findAll({
         order: [
             [sequelize.literal('"voteCount"'), 'DESC']
@@ -74,4 +74,25 @@ export async function getOne(req, res) {
     }
 
     res.json(pokemon);
+}
+
+// GET /pokemons/:id1/:id2
+export async function compare(req, res) {
+    const { id1, id2 } = req.params;
+    const queryOptions = {
+        where: {
+            id: {
+                [Op.in]: [id1, id2]
+            }
+        },
+        attributes: {
+            include: [VOTE_COUNT_ATTRIBUTE]
+        },
+        include: [{...COMMON_INCLUDE}]
+    } 
+    const pokemons = await Pokemon.findAll(queryOptions);
+    if (pokemons.length !== 2) {
+        return res.status(404).json({ message: "Pokémon non trouvé" });
+    }
+    res.status(200).json(pokemons);
 }

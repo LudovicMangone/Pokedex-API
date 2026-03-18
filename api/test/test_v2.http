@@ -80,6 +80,10 @@ GET {{baseUrl}}/pokemons?name=arre&type=plante
 ### ❌ Test Robustesse : ID malformé (Doit renvoyer 400)
 GET {{baseUrl}}/pokemons/not-a-number
 
+### Compare 2 pokemons
+GET {{baseUrl}}/pokemons/compare/2/1
+
+
 
 ### ----------------------------------------------------------------------------
 ### 🔴 ÉTAPE 4 : SÉCURITÉ & TEAMS (OPTION A)
