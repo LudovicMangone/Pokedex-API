@@ -136,6 +136,10 @@ Authorization: Bearer {{tokenSacha}}
 DELETE {{baseUrl}}/pokemons/{{pikachuId}}/vote
 Authorization: Bearer {{tokenSacha}}
 
+### ✅ CONSULTER LE PODIUM (TOP 3)
+# Cette route doit te renvoyer les Pokémons triés du plus populaire au moins populaire
+GET {{baseUrl}}/pokemons/podium
+
 
 ### ----------------------------------------------------------------------------
 ### ⚪ ÉTAPE 6 : NETTOYAGE & CAS LIMITES

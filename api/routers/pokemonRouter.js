@@ -7,8 +7,13 @@ import { verifyToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-// Route pour trouver pokemon
+// Route pour lister les pokemons
 router.get("/", pokemonController.getAll);
+
+// Route pour afficher le podium
+router.get("/podium", pokemonController.getPodium);
+
+// Route pour trouver un pokemon
 router.get("/:id",validateId(), pokemonController.getOne);
 
 // Route pour voter

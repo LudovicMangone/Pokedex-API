@@ -1,5 +1,15 @@
-import { Pokemon, Type } from "../models/index.js";
+import { Pokemon, Type, sequelize } from "../models/index.js";
 import { Op } from "sequelize";
+
+const VOTE_COUNT_ATTRIBUTE = [
+    sequelize.literal('(SELECT COUNT(*) FROM votes WHERE votes.pokemon_id = "Pokemon".id)'),
+    'voteCount'
+];
+
+const COMMON_INCLUDE = {
+        association: "types",
+        through: { attributes: [] }
+    };
 
 // GET /pokemons
 export async function getAll(req, res) {
@@ -8,12 +18,10 @@ export async function getAll(req, res) {
     const queryOptions = {
         order: [['id', 'ASC']],
         where: {},
-        include: [
-            {
-                association: "types",
-                through: { attributes: [] },
-                where: {}
-        }]
+        attributes: {
+            include: [VOTE_COUNT_ATTRIBUTE]
+        },
+        include: [{...COMMON_INCLUDE}] 
     };
 
     if (name) {
@@ -30,14 +38,30 @@ export async function getAll(req, res) {
     }
 
     const pokemons = await Pokemon.findAll(queryOptions);
-    
+
     res.json(pokemons);
+}
+
+// GET /pokemons/podium
+
+export async function getPodium(req,res) {
+    const pokemons = await Pokemon.findAll({
+        order: [
+            [sequelize.literal('"voteCount"'), 'DESC']
+        ],
+        limit: 3,
+        attributes: {
+            include: [VOTE_COUNT_ATTRIBUTE]
+        },
+        include: [COMMON_INCLUDE]
+    })
+    res.status(200).json(pokemons);
 }
 
 // GET /pokemons/:id
 export async function getOne(req, res) {
     const { id } = req.params;
-    
+
     const pokemon = await Pokemon.findByPk(id, {
         include: {
             association: "types",

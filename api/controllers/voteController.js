@@ -15,7 +15,6 @@ export async function addVote(req, res) {
         return res.status(400).json({ message: "Vous avez déjà voté pour ce Pokémon" });
     }
 
-    // 3. On ajoute le vote
     await pokemon.addVoter(userId);
 
     res.status(201).json({ message: `Vote enregistré pour ${pokemon.name}` });
