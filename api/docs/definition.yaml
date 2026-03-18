@@ -1,0 +1,331 @@
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  # ==========================================
+  # AUTHENTIFICATION
+  # ==========================================
+  /auth/signup:
+    post:
+      tags:
+        - Authentification
+      summary: Créer un compte utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pseudo:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        201:
+          description: Utilisateur créé avec succès.
+        400:
+          description: Données invalides.
+
+  /auth/login:
+    post:
+      tags:
+        - Authentification
+      summary: Se connecter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Connexion réussie, retourne le Token JWT.
+        401:
+          description: Identifiants incorrects.
+
+  # ==========================================
+  # POKÉMONS
+  # ==========================================
+  /pokemons:
+    get:
+      tags:
+        - Pokémons
+      summary: Liste des pokémons
+      description: Retourne la liste complète des pokémons avec filtres optionnels.
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Filtrer par nom (recherche partielle)
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: Filtrer par type (ex. Feu, Eau)
+      responses:
+        200:
+          description: Liste récupérée avec succès.
+
+  /pokemons/podium:
+    get:
+      tags:
+        - Pokémons
+      summary: Afficher le podium
+      description: Retourne les meilleurs pokémons basés sur leur nombre de votes.
+      responses:
+        200:
+          description: Podium récupéré avec succès.
+
+  /pokemons/compare/{id1}/{id2}:
+    get:
+      tags:
+        - Pokémons
+      summary: Comparer deux pokémons
+      parameters:
+        - in: path
+          name: id1
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: id2
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Comparaison réussie.
+
+  /pokemons/{id}:
+    get:
+      tags:
+        - Pokémons
+      summary: Détails d'un pokémon
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Détails du pokémon trouvés.
+
+  # ==========================================
+  # VOTES
+  # ==========================================
+  /pokemons/{id}/vote:
+    post:
+      tags:
+        - Votes
+      summary: Voter pour un pokémon
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        201:
+          description: Vote enregistré avec succès.
+        401:
+          description: Non autorisé (Token manquant ou invalide).
+          
+    delete:
+      tags:
+        - Votes
+      summary: Retirer un vote
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Vote retiré avec succès.
+
+  # ==========================================
+  # TYPES
+  # ==========================================
+  /types:
+    get:
+      tags:
+        - Types
+      summary: Liste de tous les types
+      responses:
+        200:
+          description: Liste des types récupérée.
+
+  /types/{id}:
+    get:
+      tags:
+        - Types
+      summary: Récupérer un type par son ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Type trouvé.
+
+  # ==========================================
+  # TEAMS (ÉQUIPES)
+  # ==========================================
+  /teams:
+    get:
+      tags:
+        - Équipes
+      summary: Liste de toutes les équipes
+      responses:
+        200:
+          description: Liste récupérée avec succès.
+
+    post:
+      tags:
+        - Équipes
+      summary: Créer une équipe
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        201:
+          description: Équipe créée avec succès.
+
+  /teams/{id}:
+    get:
+      tags:
+        - Équipes
+      summary: Détails d'une équipe
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Équipe trouvée.
+
+    patch:
+      tags:
+        - Équipes
+      summary: Modifier son équipe
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        200:
+          description: Équipe modifiée.
+        403:
+          description: Interdit (Ce n'est pas votre équipe).
+
+    delete:
+      tags:
+        - Équipes
+      summary: Supprimer son équipe
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Équipe supprimée.
+        403:
+          description: Interdit (Ce n'est pas votre équipe).
+
+  # ==========================================
+  # GESTION DES POKÉMONS DANS L'ÉQUIPE
+  # ==========================================
+  /teams/{teamId}/pokemons/{pokemonId}:
+    post:
+      tags:
+        - Équipes (Relations)
+      summary: Ajouter un pokémon à son équipe
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: pokemonId
+          required: true
+          schema:
+            type: integer
+      responses:
+        201:
+          description: Pokémon ajouté à l'équipe.
+
+    delete:
+      tags:
+        - Équipes (Relations)
+      summary: Retirer un pokémon de son équipe
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: pokemonId
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Pokémon retiré de l'équipe.

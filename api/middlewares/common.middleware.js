@@ -26,7 +26,6 @@ export function errorHandler(err, req, res, next) {
     response.stack = err.stack;
   }
   res.status(500).json(response);
-  next();
 }
 
 export function notFoundHandler(req, res, next) {
