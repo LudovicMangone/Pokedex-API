@@ -91,7 +91,7 @@ L'application respecte le motif de conception **MVC (Modèle-Vue-Contrôleur)** 
 
 ## 🗺️ Évolutions et Roadmap
 
-Ce projet a été développé de manière itérative. Pour découvrir comment l'API a été construite (du MVP jusqu'à l'implémentation de la sécurité) et voir les fonctionnalités prévues pour l'avenir, consultez ma **[Roadmap détaillée](./ROADMAP.md)**.
+Ce projet a été développé de manière itérative. Pour découvrir comment l'API a été construite (du MVP jusqu'à l'implémentation de la sécurité) et voir les fonctionnalités prévues pour l'avenir, consultez ma **[Roadmap détaillée](./roadmap.md)**.
 
 ## ✍️ Auteur
 
