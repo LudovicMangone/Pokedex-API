@@ -95,4 +95,4 @@ Ce projet a été développé de manière itérative. Pour découvrir comment l'
 
 ## ✍️ Auteur
 
-* **Ludovic Mangone** - Mon Profil GitHub
+* **Ludovic Mangone**
